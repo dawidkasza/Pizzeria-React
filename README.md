@@ -1,4 +1,4 @@
-#link do wersji demo"
+#link do wersji demo
 [Link](https://5fdfe5cd-5383-4377-970c-ef8b1e47f75b-00-3mzq3enb966qi.picard.replit.dev/).
 
 # Getting Started with Create React App
