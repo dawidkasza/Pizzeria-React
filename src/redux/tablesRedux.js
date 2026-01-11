@@ -17,6 +17,13 @@ const setTables = payload => ({
   payload,
 });
 
+const UPDATE_TABLE = createActionName('UPDATE_TABLE');
+
+const updateTable = updatedTable => ({
+  type: UPDATE_TABLE,
+  payload: updatedTable,
+});
+
 const startLoading = () => ({ type: START_LOADING });
 const stopLoading = () => ({ type: STOP_LOADING });
 
@@ -33,6 +40,23 @@ export const fetchTablesFromAPI = () => {
       });
   };
 };
+export const updateTableInAPI = tableData => {
+  return dispatch => {
+    dispatch(startLoading());
+
+    return fetch(`http://localhost:3131/api/tables/${tableData.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tableData),
+    })
+      .then(res => res.json())
+      .then(updatedTable => {
+        dispatch(updateTable(updatedTable));
+        dispatch(stopLoading());
+      });
+  };
+};
+
 
 // reducer
 const initialState = {
@@ -50,6 +74,14 @@ const tablesReducer = (statePart = initialState, action) => {
 
     case SET_TABLES:
       return { ...statePart, data: action.payload };
+
+    case UPDATE_TABLE:
+      return {
+        ...statePart,
+        data: statePart.data.map(table =>
+          table.id === action.payload.id ? action.payload : table
+        ),
+  };
 
     default:
       return statePart;

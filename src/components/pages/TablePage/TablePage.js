@@ -1,23 +1,30 @@
-import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTableById, fetchTablesFromAPI, getTablesLoading } from '../../../redux/tablesRedux';
 import TableForm from '../../features/TableForm/TableForm';
+import {
+  fetchTablesFromAPI,
+  getTableById,
+  getTablesLoading,
+  updateTableInAPI,
+} from '../../../redux/tablesRedux';
+import { useEffect } from 'react';
 
 const TablePage = () => {
-  const { id } = useParams();
+   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const table = useSelector(state => getTableById(state, id));
   const loading = useSelector(getTablesLoading);
 
+  // fetch tables if empty
   useEffect(() => {
     if (!table) {
       dispatch(fetchTablesFromAPI());
     }
   }, [dispatch, table]);
 
+  // only redirect if not loading and table still not found
   useEffect(() => {
     if (!loading && !table) {
       navigate('/');
@@ -28,10 +35,16 @@ const TablePage = () => {
     return <h2>Loading...</h2>;
   }
 
+  const handleSubmit = updatedTable => {
+    dispatch(updateTableInAPI(updatedTable)).then(() => {
+      navigate('/');
+    });
+  };
+
   return (
     <>
       <h1>Table {table.id}</h1>
-      <TableForm/>
+      <TableForm table={table} loading={loading} onSubmit={handleSubmit} />
     </>
   );
 };
