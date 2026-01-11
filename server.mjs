@@ -1,15 +1,17 @@
 import jsonServer from 'json-server';
+import cors from 'cors';
+
 const server = jsonServer.create();
 const router = jsonServer.router('build/db/app.json');
-const middlewares = jsonServer.defaults({
-  static: 'build',
-  noCors: true
-});
-const port = process.env.PORT || 3131;
-server.use(middlewares);
+
+server.use(cors()); // <-- pozwala na fetch z frontendu
+server.use(jsonServer.defaults({ static: 'build' }));
+
 server.use(jsonServer.rewriter({
   '/api/*': '/$1'
 }));
 
 server.use(router);
-server.listen(port);
+
+const port = process.env.PORT || 3131;
+server.listen(port, () => console.log(`Server running on port ${port}`));
